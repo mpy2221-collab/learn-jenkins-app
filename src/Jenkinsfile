@@ -1,9 +1,9 @@
-pipeline{
+pipeline {
     agent any
 
-    states{
-        stage('Hello'){
-            steps{
+    stages {
+        stage('Hello') {
+            steps {
                 echo 'Hello World'
             }
         }
