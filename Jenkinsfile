@@ -101,12 +101,11 @@ pipeline {
         stage('Approval'){
             steps{
                 timeout(time: 1, unit: 'MINUTES'){
-                    input{
-                        message '운영 환경에 배포할까요?'
-                        ok '네 배포합니다.'
+                    input
+                        message '운영 환경에 배포할까요?',
+                        ok '네 배포합니다.',
                         // 거절 버튼 문구
                         submitter '거절'
-                    }
                 }
             }
         }
