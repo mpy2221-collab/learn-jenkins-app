@@ -13,9 +13,10 @@
 //     - 오류가 발생하지 않고 실행 로그에 메시지가 표시되는지 확인한다.
 
 pipeline {
-    agent{
-        docker{
-            image 'node:18-alpine'
+    agent {
+        docker {
+		        // 강의 자료와 버전을 맞춰주세요! 영상과는 다름!
+            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
             reuseNode true
         }
     }
@@ -52,6 +53,16 @@ pipeline {
                     fi
 
                     npm test
+                '''
+            }
+        }
+
+        stage('E2E'){
+            steps{
+                sh'''
+                    npm install -g serve
+                    serve -s build
+                    npx playwright test
                 '''
             }
         }
