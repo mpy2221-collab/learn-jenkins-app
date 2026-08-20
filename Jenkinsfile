@@ -54,6 +54,7 @@ pipeline {
                     else
                         echo "index.html file is not exist!!!"
                         exit 1
+                    fi
 
                     npm test
                 '''
