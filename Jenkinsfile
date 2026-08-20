@@ -12,6 +12,19 @@
 //     - 변경 사항을 커밋 푸시 한 후 업데이트된 파이프라인 빌드를 실행한다.
 //     - 오류가 발생하지 않고 실행 로그에 메시지가 표시되는지 확인한다.
 
+
+// - **1단계**
+//     - Deploy staging 단계와 Deploy prod 단계 사이에 ‘Approval’ 이라는 새로운 단계를 추가한다.
+// - **2단계**
+//     - 해당 단계에 입력 단계를 추가하기
+//     - 입력질문 : 운영 환경에 배포할까요?
+//     - 확인 버튼 문구 : 네 배포합니다.
+// - **3단계**
+//     - 해당 Pipline을 실행하고 승인 단계에서 확인을 클릭하여 파이프라인이 성공적으로 실행됐는지 확인한다.
+// - **4단계**
+//     - Approval 단계에서 15분의 타임 아웃을 추가한다.
+//     - 참고로 **빠른 확인을 위하여 1분의 타임 아웃을 추가하는 것도 무방함**
+
 pipeline {
     agent {
         docker {
@@ -85,6 +98,18 @@ pipeline {
             }
         }
 
+        stage('Approval'){
+            steps{
+                input{
+                    message '운영 환경에 배포할까요?'
+                    ok '네 배포합니다.'
+                    timeout(time: 1, unit: 'MINUTES')
+                    // 거절 버튼 문구
+                    submitter '거절'
+                }
+            }
+        }
+
         stage('Deploy prod'){
             steps{
                 sh'''
@@ -104,7 +129,6 @@ pipeline {
             steps{
                 sh'''
                     npx playwright test --reporter=html
-
                 '''
             }
         }
