@@ -13,16 +13,16 @@
 //     - 오류가 발생하지 않고 실행 로그에 메시지가 표시되는지 확인한다.
 
 pipeline {
-    agent any
+    agent{
+        docker{
+            image 'node:18-alpine'
+            reuseNode true
+        }
+    }
 
     stages {
         stage('Build') {
-            agent{
-                docker{
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
+            
 
             steps {
                 sh '''
@@ -38,25 +38,20 @@ pipeline {
         }
 
         stage('Test'){
-            agent{
-                docker{
-                    image 'node:18-alpine'
-                    reuseNode true 
-                }
-            }
+            
 
             steps{
                 sh '''
                     echo 'Test stage'
 
-                    if [ -f "build/index.html" ]; then
+                    if test -f "build/index.html"; then
                         echo "index.html file is exist!!!"
                     else
                         echo "index.html file is not exist!!!"
                         exit 1
                     fi
 
-                    ci=true npm test
+                    npm test
                 '''
             }
         }
