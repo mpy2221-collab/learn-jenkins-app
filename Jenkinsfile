@@ -49,14 +49,14 @@ pipeline {
                 sh '''
                     echo 'Test stage'
 
-                    if [ -f "build/index.html"]; then
+                    if [ -f "build/index.html" ]; then
                         echo "index.html file is exist!!!"
                     else
                         echo "index.html file is not exist!!!"
                         exit 1
                     fi
 
-                    npm test
+                    ci=true npm test
                 '''
             }
         }
