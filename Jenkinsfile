@@ -84,6 +84,18 @@ pipeline {
                 '''
             }
         }
+
+        stage('Prod E2E'){
+            environment{
+                CI_ENVIRONMENT_URL = 'https://curious-cupcake-02df58.netlify.app'
+            }
+            steps{
+                sh'''
+                    npx playwright test --reporter=html
+
+                '''
+            }
+        }
     }
 
     post{
