@@ -37,7 +37,7 @@ pipeline {
    
 
 
-  }
+  
 
   stage('Build Docker Image'){
     agent {
@@ -86,4 +86,6 @@ pipeline {
         }
       }
     }
+
+  }
 }
