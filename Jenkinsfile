@@ -9,6 +9,8 @@ pipeline {
     AWS_ECS_CLUSTER = 'flowery-gecko-fx7mmb'
     AWS_ECS_SERVICE_PROD = 'LearnJenkinsApp-Service-Prod'
     AWS_ECS_TD_PROD = 'LearnJenkinsApp-TaskDefinition-Prod'
+
+    AWS_DOCKER_REGISTRY='198200019683.dkr.ecr.ap-southeast-2.amazonaws.com'
   }
 
 
@@ -57,7 +59,9 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
             sh'''
                yum install -y docker
-               docker build -t $APP_NAME:$REACT_APP_VERSION .
+               docker build -t $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION .
+               aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_DOCKER_REGISTRY
+               docker push $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION
             '''
         }
       }
