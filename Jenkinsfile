@@ -8,28 +8,15 @@ pipeline {
   }
 
   stages {
-    stage('AWS') {
-      agent {
-        docker {
-          image 'amazon/aws-cli'
-          // aws-cli 이미지는 기본적으로 실행 후 바로 종료되므로 엔트리포인트 무력화
-          args "--entrypoint=''"
-        }
-      }
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-            sh'''
-                aws --version
-                echo "Hello S3!!" > index.html
-                aws s3 cp index.html s3://learn-jenkins-202608211600/index.html
-            '''
-        }
-      }
-    }
+    
 
     stage('Build') {
       agent {
-        docker { image 'mcr.microsoft.com/playwright:v1.39.0-jammy' }
+        docker { 
+            image 'mcr.microsoft.com/playwright:v1.39.0-jammy' 
+            reuseNode true
+        }
+        
       }
       steps {
         sh '''
@@ -39,6 +26,31 @@ pipeline {
           npm ci
           npm run build
         '''
+      }
+    }
+
+    stage('AWS') {
+      agent {
+        docker {
+          image 'amazon/aws-cli'
+          reuseNode true
+          // aws-cli 이미지는 기본적으로 실행 후 바로 종료되므로 엔트리포인트 무력화
+          args "--entrypoint=''"
+        }
+      }
+
+        environment{
+            AWS_S3_BUCKET = 'learn-jenkins-202608211600'
+        }
+
+
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+            sh'''
+                aws --version
+                aws s3 sync build s3://${AWS_S3_BUCKET}
+            '''
+        }
       }
     }
 
